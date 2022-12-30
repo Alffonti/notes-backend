@@ -16,6 +16,8 @@ The **static** middleware is used to serve the static files (production build of
 
 The application was deployed to **Cyclic**. It was chosen over Render and Fly.io because Apps do not have to sleep, wake up, spin up or recycle even on free tier. And no credit card is needed.
 
+The node/express-backend resides in the Cyclic server. When the root address (https://notes-backend.cyclic.app/) is accessed, the browser loads and executes the React app that fetches the json-data from the Cyclic server.
+
 ## Streamlining deploying of the frontend
 
 The following npm-scripts were added to the `package.json` in order to create a new production build of the frontend from the CLI.
