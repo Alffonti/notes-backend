@@ -1,1 +1,5 @@
-GET http://localhost:3001/api/notes/5
+GET http://localhost:3001/api/notes/63aedaf7c7787506d823ef50
+
+###
+
+GET https://notes-backend.cyclic.app/api/notes/63aedaf7c7787506d823ef50

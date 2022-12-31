@@ -33,6 +33,26 @@ The following npm-scripts were added to the `package.json` in order to create a 
 }
 ```
 
+## MongoDB
+
+The **Mongoose** library was installed to provide schema validation, and to map objects in the code into documents in MongoDB.
+
+The communication between the backend and MongoDB was extracted into its own module `model/note.js`
+
+The `findbyId()`, `findByIdAndDelete()`, and `findByIdAndUpdate()` methods were used to get a note, delete a note and update a note, respectively.
+
+Errors are handled by the **error-handler middleware**. E.g.: if the id query parameter is invalid, the error handler will send a response to the browser with the response object passed as a parameter.
+```
+{ error: 'malformatted id' }
+```
+
+## Enviroment variables
+
+A `.env` file was created at the root of the project, after installing the **dotenv** library, to define environment variables during develpment mode.
+
+The environment variables defined in the .env file can be taken into use with the expression `require('dotenv').config()` and can be referenced in the code with the `process.env` syntax.
+
+The environment variables were defined direclty in the Cyclic dashboard to reference those variables during production mode.
 
 ## Tools
 

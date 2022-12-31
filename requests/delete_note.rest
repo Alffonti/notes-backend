@@ -1,1 +1,5 @@
-DELETE http://localhost:3001/api/notes/4
+DELETE http://localhost:3001/api/notes/63b05d8bc95cee348dd490b5
+
+###
+
+DELETE https://notes-backend.cyclic.app/api/notes/63b062abe1b93cd706bbe6e8

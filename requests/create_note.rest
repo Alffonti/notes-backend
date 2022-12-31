@@ -5,3 +5,13 @@ content-type: application/json
 "content": "Postman is a good tool for testing a REST-API",
 "important": true
 }
+
+###
+
+POST https://notes-backend.cyclic.app/api/notes
+content-type: application/json
+
+{
+"content": "Creating note from VS Code",
+"important": true
+}
