@@ -35,6 +35,8 @@ The following npm-scripts were added to the `package.json` in order to create a 
 
 ## MongoDB
 
+The **MongoDB Atlas** cloud data platform is used to built the MongoDB database.
+
 The **Mongoose** library was installed to provide schema validation, and to map objects in the code into documents in MongoDB.
 
 The communication between the backend and MongoDB was extracted into its own module `model/note.js`
@@ -46,13 +48,65 @@ Errors are handled by the **error-handler middleware**. E.g.: if the id query pa
 { error: 'malformatted id' }
 ```
 
+## Validation
+
+The format of the data that is stored in the application's database is constrained by specific validation rules defined for each field in the schema.
+
+```
+const noteSchema = new mongoose.Schema({
+  content: {
+    type: String,
+    minLength: 5,
+    required: true
+  },
+  date: {
+    type: Date,
+    required: true
+  },
+  important: Boolean
+})
+```
+
+The potential errors originated when breaking the constraints while creating a note are passed to the error handler middleware using the `next(error)` function.
+
+The validation errors are handled by the error hanlder:
+
+```
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
+  }
+
+  next(error)
+}
+```
+
+
+The following error is sent to the browser if the validation when creating a note with less than 5 characters in the content field.
+
+```
+{
+  "error": "Note validation failed: content: Path `content` (`Mor`) is shorter than the minimum allowed length (5)."
+}
+```
+
+When using findOneAndUpdate method (editing a note), Mongoose doesn't automatically run validation. To trigger this, a configuration object need to be passed in the third (options) parameter.
+
+```
+{ runValidators: true, context: 'query' }
+```
+
 ## Enviroment variables
 
-A `.env` file was created at the root of the project, after installing the **dotenv** library, to define environment variables during develpment mode.
+A `.env` file was created at the root of the project, after installing the **dotenv** library, to define environment variables in development mode.
 
 The environment variables defined in the .env file can be taken into use with the expression `require('dotenv').config()` and can be referenced in the code with the `process.env` syntax.
 
-The environment variables were defined direclty in the Cyclic dashboard to reference those variables during production mode.
+The environment variables were defined direclty in the Cyclic dashboard to reference those variables in production mode.
 
 ## Tools
 
@@ -60,6 +114,8 @@ The environment variables were defined direclty in the Cyclic dashboard to refer
 - Node
 - Espress
 - Visual Studio Code REST client plugin
+- MongoDB Atlas
+- Mongoose
 - Cyclic
 
 ## Resources
@@ -67,3 +123,5 @@ The environment variables were defined direclty in the Cyclic dashboard to refer
 - [How to Deploy Your Node.js Application for Free with Render - FreeCodeCamp](https://www.freecodecamp.org/news/how-to-deploy-nodejs-application-with-render/)
 
 - [Serving static files in Express](https://expressjs.com/en/starter/static-files.html)
+
+- [Validation - Mongoose](https://mongoosejs.com/docs/validation.html)

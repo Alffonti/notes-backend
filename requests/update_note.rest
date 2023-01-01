@@ -1,0 +1,15 @@
+PUT http://localhost:3001/api/notes/63b0ba53dc4a5499e119cdee
+content-type: application/json
+
+{
+"content": "More than 5 characters. Updated with PUT method"
+}
+
+###
+
+PUT https://notes-backend.cyclic.app/api/notes/63b0ba53dc4a5499e119cdee
+content-type: application/json
+
+{
+"content": "More than 5 characters. Updated with PUT method"
+}
