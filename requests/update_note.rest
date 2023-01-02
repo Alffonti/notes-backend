@@ -7,9 +7,9 @@ content-type: application/json
 
 ###
 
-PUT https://notes-backend.cyclic.app/api/notes/63b0ba53dc4a5499e119cdee
+PUT https://notes-backend.cyclic.app/api/notes/63b17d6c0be1b747a24ccf32
 content-type: application/json
 
 {
-"content": "More than 5 characters. Updated with PUT method"
+"content": "Creating note from the frontend. Updated with PUT method"
 }

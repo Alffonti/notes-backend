@@ -86,7 +86,7 @@ const errorHandler = (error, request, response, next) => {
 ```
 
 
-The following error is sent to the browser if the validation when creating a note with less than 5 characters in the content field.
+The following error is sent to the browser if a note is created with less than 5 characters in the content field.
 
 ```
 {
@@ -99,6 +99,39 @@ When using findOneAndUpdate method (editing a note), Mongoose doesn't automatica
 ```
 { runValidators: true, context: 'query' }
 ```
+
+### Lint
+
+The ESlint package was installed as development dependency.
+
+The ESlint default configuration was run with the command:
+
+```
+npx eslint --init
+```
+
+After answering the questions, the `.eslintrc.js` configuration file was created.
+
+A npm script was created to check every file in the project by ESlint.
+
+```
+{
+  // ...
+  "scripts": {
+    "start": "node index.js",
+    // ...
+    "lint": "eslint ."
+  },
+  // ...
+}
+```
+
+The `build` directory was ignored from linting by creating a `.eslintignore` file in the project's root.
+
+The VSCode ESlint plugin was installed in order to run the linter continuosly and see errors (which are underlined with a red line) in the code immediately.
+
+
+
 
 ## Enviroment variables
 
@@ -116,7 +149,7 @@ The environment variables were defined direclty in the Cyclic dashboard to refer
 - Visual Studio Code REST client plugin
 - MongoDB Atlas
 - Mongoose
-- Cyclic
+- Cyclicgit
 
 ## Resources
 
