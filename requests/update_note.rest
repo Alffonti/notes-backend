@@ -1,8 +1,8 @@
-PUT http://localhost:3001/api/notes/63b0ba53dc4a5499e119cdee
+PUT http://localhost:3001/api/notes/63b5579e44d8db169944786d
 content-type: application/json
 
 {
-"content": "More than 5 characters. Updated with PUT method"
+"content": "Creating note from REST plugin with new directory structure. Updated with PUT method"
 }
 
 ###
