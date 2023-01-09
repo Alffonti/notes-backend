@@ -6,11 +6,13 @@ The **express** library was installed to build the backend server.
 
 The **nodemon** package was installed as a development dependency to automatically restart the application everytime a file changes.
 
+The **express-async-errors** library was installed to handle async functions so that errors are catched when they occurs and passed to the error-handling middleware. By doing so, the `try...catch` statements are not needed, keeping the code clean and uncluttered.
+
 The **Visual Studio Code REST client plugin** was installed to test the HTTP requests. A `requests` directory at the root of the backend application was added containing REST client requests as files ending with the .rest extension.
 
 ## Directory structure
 
-This project separates the different responsabilites into separate modules.
+ This repository separates the different responsabilites into separate modules and is structured as follows:
 
 ```
 ├── index.js
@@ -102,7 +104,19 @@ To run validations when editing a note, the following configuration object need 
 { runValidators: true, context: 'query' }
 ```
 
-### Linting
+## Logging
+
+The logger functions were defined in the `utils/logger.js` file and are only run in production and development mode in order to avoid obstructing the test execution output when testing the application.
+
+```javascript
+const info = (...params) => {
+  if (process.env.NODE_ENV !== 'test') {
+    console.log(...params)
+  }
+}
+```
+
+## Linting
 
 The **ESlint** package was installed as a development dependency.
 
@@ -132,7 +146,63 @@ The `build` directory was ignored by ESlint by creating a `.eslintignore` file i
 
 The VSCode ESlint plugin was installed in order to run the linter continuously and see errors (which are underlined with a red line) in the code immediately.
 
+## Testing
+
+The Jest library was installed as a development dependency in order to test the backend application.
+
+The Jest global variable was added to the `env` property in the `.eslintrc.js` file.
+
+The following npm-script was added in order to execute the test serially and display individual test results with the test suite hierarchy. The `-`-forceExit` and `--detectOpenHandles` were added to avoid errors during the execution of the test.
+
+```
+"test": "NODE_ENV=test jest --verbose --runInBand --forceExit --detectOpenHandles"
+```
+
+The -t option can be used for running tests with a specific name:
+```
+npm test -- -t "notes are returned as json"
+```
+
+Individual test cases were defined in files ending with the `test.js` extension in the `tests` directory.
+
+The **Supertest** package was installed to test endpoints and routes when making HTTP requests to the backend.
+
+The Express application imported form the `app.js` module was passed to the function imported from the supertest package, which converts it into a **superagent object** where some methods (such as `get`, `post`, `send`, `expect`) can be used to test the HTTP responses.
+
+```
+const supertest = require('supertest')
+const app = require('../app')
+const api = supertest(app)
+```
+
+An ephemeral port is started by Supertest during the tests as the server is not listening for HTTP connections made from the test files.
+
+A separate database address is used (defined in the `.env` file ) when running the test.
+
+The `test_helper.js` file contains the initial test database state and other functions (fetching notes stored in the database, etc).
+
+The `afterAll` method was used to close the database connection used by Mongoose once all the tests are finished running.
+```
+afterAll(() => {
+  mongoose.connection.close()
+})
+```
+
+The `beforeEach` method was used to clear out and initialize the database with the same state before every test is run. The `Promise.all` method was used to wait until every promise for saving a note is finished (meaning that the database has been initialized) before ending the execution of the callback function passed as parameter to the `beforeEach` method .
+```
+beforeEach(async () => {
+  await Note.deleteMany({})
+
+  const noteObjects = helper.initialNotes.map(note => new Note(note))
+  const promiseArray = noteObjects.map(note => note.save())
+
+  await Promise.all(promiseArray)
+})
+```
+
 ## Enviroment variables
+
+The execution mode of the application environment variable is defined in the following npm-scripts: `start`, `dev, and `test` which set the NODE_ENV variable to production, development and test, respectively.
 
 The `.env` file was created at the root of the project, after installing the **dotenv** library, to define environment variables in development mode.
 
@@ -174,6 +244,8 @@ The following npm-scripts were added to the `package.json` in order to create a 
 - MongoDB Atlas
 - Mongoose
 - ESlint
+- Jest
+- Supertest
 - Git
 - GitHub
 - Cyclic
@@ -187,3 +259,7 @@ The following npm-scripts were added to the `package.json` in order to create a 
 - [Validation - Mongoose](https://mongoosejs.com/docs/validation.html)
 
 - [ESlint Docs](https://eslint.org/)
+
+- [Jest Docs](https://jestjs.io/docs/getting-started)
+
+- [Supertest repository](https://github.com/ladjs/supertest)
