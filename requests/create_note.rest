@@ -1,9 +1,10 @@
 POST http://localhost:3001/api/notes
-content-type: application/json
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1sdXVra2FpIiwiaWQiOiI2M2JkNmNmY2MzZDkyNjQyY2Q3MzcxNzciLCJpYXQiOjE2NzM1MjgzMTV9.MM5sgqT1j4NYmRwQbyo3iejBqn861mO249ipnMYVcdU
 
 {
-"content": "N",
-"important": false
+"content": "Token authentication is important to restrict user permissions",
+"important": true
 }
 
 ###

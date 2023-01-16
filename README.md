@@ -6,6 +6,8 @@ The **express** library was installed to build the backend server.
 
 The **nodemon** package was installed as a development dependency to automatically restart the application everytime a file changes.
 
+The backend application has been implemented in compliance with the RESTful conventions. E.g.: a note is created by making an HTTP POST request to the note path.
+
 The **express-async-errors** library was installed to handle async functions so that errors are catched when they occurs and passed to the error-handling middleware. By doing so, the `try...catch` statements are not needed, keeping the code clean and uncluttered.
 
 The **Visual Studio Code REST client plugin** was installed to test the HTTP requests. A `requests` directory at the root of the backend application was added containing REST client requests as files ending with the .rest extension.
@@ -200,6 +202,109 @@ beforeEach(async () => {
 })
 ```
 
+The `beforeAll` method was used when testing the addition and deletion of a note in order to generate a valid token for a newly created user. The token can be referenced in each of those tests.
+
+```
+  let token = null
+  beforeAll(async () => {
+    await User.deleteMany({})
+
+    const passwordHash = await bcrypt.hash('sekret', 10)
+    const user = new User({
+      username: 'root',
+      passwordHash,
+    })
+
+    const savedUser = await user.save()
+
+    const userForToken = { username: savedUser.username, id: savedUser._id }
+
+    token = jwt.sign(userForToken, process.env.SECRET, {
+      expiresIn: 60 * 60,
+    })
+
+    return token
+  })
+  ```
+
+## User administration
+
+Deleting and editing a note is only allowed for the user who created it.
+
+**References** are stored in both documents: each **note** references the user who created it, and each **user** has an array of references to all of the notes created by him/her.
+
+The `notes` field was added to the Mongoose schema for users to store an array of IDs representing each note created by a user.
+
+The schema of the user was defined in the `models/user.js` file. The `notes` field stores an array of IDs representing each note created by a user.
+
+The type of the field was set to `ObjectId` in order to specify that the data stored is a reference to a `note` document.
+
+```javascript
+const userSchema = new mongoose.Schema({
+  //
+  notes: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Note'
+    }
+  ],
+})
+```
+
+The schema of the note defined in the `models/note.js` file was updated so that it contains information about the user who created it:
+
+```javascript
+const noteSchema = new mongoose.Schema({
+ //
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }
+})
+```
+
+The **bcrypt** package was installed to generate **password hashes**. When a user is created, his/her password hash is stored in the database instead of the user' password. When the user log into the application, through the `/api/login` router, the backend application compares the password to the password hash stored in the user's document.
+
+Some validations were added into the user creation:
+- username must be unique,
+- username must be long enough,
+- username must consist of permitted characters,
+- password must be strong enough.
+
+```javascript
+usersRouter.post('/', async (request, response) => {
+  //
+  const existingUser = await User.findOne({ username })
+  if (existingUser) {
+    return response.status(400).json({
+      error: 'username must be unique'
+    })
+  }
+})
+```
+
+The `populate()` method was used in order to show the contents (`date` and `content` fields) of the users' notes when an HTTP GET request is made to the `/api/users` route.
+
+### User authentication
+
+A token must be sent in the Authorization header in order to create a new note.
+
+The **jsonwebtoken** package was installed in order to implement JSON Web Tokens.
+
+The token is sent to the client once the user login to the application.
+
+```javascript
+const token = jwt.sign(userForToken, process.env.SECRET, {
+  expiresIn: 60 * 60,
+})
+```
+
+The secret key is stored in the .env file.
+
+The token expiration time was set to 1 hour.
+
+
+
 ## Enviroment variables
 
 The execution mode of the application environment variable is defined in the following npm-scripts: `start`, `dev, and `test` which set the NODE_ENV variable to production, development and test, respectively.
@@ -246,6 +351,8 @@ The following npm-scripts were added to the `package.json` in order to create a 
 - ESlint
 - Jest
 - Supertest
+- Bcrypt
+- Jsonwebtoken
 - Git
 - GitHub
 - Cyclic
